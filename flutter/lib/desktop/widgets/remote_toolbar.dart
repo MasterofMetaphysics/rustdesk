@@ -412,15 +412,11 @@ class _RemoteToolbarState extends State<RemoteToolbar> {
 
   @override
   Widget build(BuildContext context) {
-    final isViewOnly = widget.ffi.ffiModel.viewOnly;
-    if (isViewOnly) return SizedBox.shrink(); // 完全隐藏
-    
     return Align(
       alignment: Alignment.topCenter,
       child: Obx(() => show.value
-        ? _buildToolbar(context)
-        : _buildDraggableShowHide(context),
-      ),
+          ? _buildToolbar(context)
+          : _buildDraggableShowHide(context)),
     );
   }
 
